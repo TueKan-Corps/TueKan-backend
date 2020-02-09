@@ -26,7 +26,8 @@ func main() {
 
 	app := echo.New()
 
-	routes.Index(app)
+	routes.Home(app)
+	routes.Account(app)
 
 	app.Logger.Fatal(app.Start(":1323"))
 }

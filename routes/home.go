@@ -7,6 +7,6 @@ import (
 )
 
 // Index all routes
-func Index(app *echo.Echo) {
+func Home(app *echo.Echo) {
 	app.GET("/", controller.Welcome)
 }
