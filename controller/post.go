@@ -3,6 +3,7 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -40,7 +41,7 @@ func (p *PostController) CreatePost(c echo.Context) error {
 //GetAllPostByLimit get all post from db limit db params
 func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 
-	limit := c.FormValue("limit")
+	limit := c.QueryParam("limit")
 	queryString := "SELECT * FROM post ORDER BY created_at DESC LIMIT $1"
 	rows, err := p.DB.Query(queryString, limit)
 	if err != nil {
@@ -52,7 +53,8 @@ func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 	for rows.Next() {
 		post := new(model.Post)
 
-		err := rows.Scan(&post.ID, &post.AccountID, &post.Location, &post.Description)
+		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt)
+		fmt.Println(err)
 		if err != nil {
 			return err
 		}
