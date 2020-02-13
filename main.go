@@ -28,6 +28,6 @@ func main() {
 
 	routes.Home(app)
 	routes.Account(app)
-
+	routes.Post(app)
 	app.Logger.Fatal(app.Start(":1323"))
 }
