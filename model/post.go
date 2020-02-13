@@ -17,6 +17,4 @@ type CreatePost struct {
 	Topic       string `json:"topic" from:"topic" query:"topic"`
 	Location    string `json:"location" from:"location" query:"location"`
 	Description string `json:"description" from:"description" query:"description"`
-	UpdatedAt   string `json:"updated_at" from:"updated_at" query:"updated_at"`
-	CreatedAt   string `json:"created_at" from:"created_at" query:"created_at"`
 }

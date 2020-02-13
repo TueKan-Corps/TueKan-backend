@@ -4,6 +4,7 @@ import (
 	"TueKan-backend/model"
 	"database/sql"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo"
 )
@@ -26,8 +27,10 @@ func (p *PostController) CreatePost(c echo.Context) error {
 		return err
 	}
 
+	dt := time.Now().Format("01-02-2006 15:04:05 Monday")
+
 	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at) VALUES($1,$2,$3,$4,$5,$6)"
-	_, err := p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, post.UpdatedAt, post.CreatedAt)
+	_, err := p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, dt, dt)
 	if err != nil {
 		return err
 	}
