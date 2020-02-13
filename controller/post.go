@@ -36,3 +36,28 @@ func (p *PostController) CreatePost(c echo.Context) error {
 	}
 	return c.JSON(http.StatusCreated, "Account created")
 }
+
+//GetAllPostByLimit get all post from db limit db params
+func (p *PostController) GetAllPostByLimit(c echo.Context) error {
+
+	limit := c.FormValue("limit")
+	queryString := "SELECT * FROM post ORDER BY created_at DESC LIMIT $1"
+	rows, err := p.DB.Query(queryString, limit)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	posts := make([]*model.Post, 0)
+	for rows.Next() {
+		post := new(model.Post)
+
+		err := rows.Scan(&post.ID, &post.AccountID, &post.Location, &post.Description)
+		if err != nil {
+			return err
+		}
+		posts = append(posts, post)
+	}
+
+	return c.JSON(http.StatusOK, posts)
+}
