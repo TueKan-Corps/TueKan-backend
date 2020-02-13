@@ -3,7 +3,6 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -54,7 +53,6 @@ func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 		post := new(model.Post)
 
 		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt)
-		fmt.Println(err)
 		if err != nil {
 			return err
 		}
