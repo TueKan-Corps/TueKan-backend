@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"TueKan-backend/model"
 	"database/sql"
+	"net/http"
 
 	"github.com/labstack/echo"
 )
@@ -18,6 +20,16 @@ func NewPostController(db *sql.DB) *PostController {
 
 //CreatePost from json body
 func (p *PostController) CreatePost(c echo.Context) error {
+	post := new(model.CreatePost)
 
-	return nil
+	if err := c.Bind(post); err != nil {
+		return err
+	}
+
+	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at) VALUES($1,$2,$3,$4,$5,$6)"
+	_, err := p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, post.UpdatedAt, post.CreatedAt)
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusCreated, "Account created")
 }
