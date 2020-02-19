@@ -4,6 +4,7 @@ import (
 	"TueKan-backend/model"
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
 )
@@ -26,8 +27,14 @@ func (a *AccountController) Create(c echo.Context) error {
 		return err
 	}
 
-	queryString := "INSERT INTO account (username,password) VALUES ($1,$2)"
-	_, err := a.DB.Exec(queryString, account.Username, account.Password)
+	coinAmount, err := strconv.Atoi(c.FormValue("coin_amount"))
+	if err != nil {
+		return err
+	}
+	account.CoinAmount = coinAmount
+
+	queryString := "INSERT INTO account (username,password,coin_amount) VALUES ($1,$2,$3)"
+	_, err = a.DB.Exec(queryString, account.Username, account.Password, account.CoinAmount)
 	if err != nil {
 		return err
 	}
@@ -55,7 +62,6 @@ func (a *AccountController) GetAll(c echo.Context) error {
 		}
 		accounts = append(accounts, account)
 	}
-
 	c.JSON(http.StatusOK, accounts)
 	return nil
 }

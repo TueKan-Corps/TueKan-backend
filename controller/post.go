@@ -4,6 +4,7 @@ import (
 	"TueKan-backend/model"
 	"database/sql"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo"
@@ -27,21 +28,29 @@ func (p *PostController) CreatePost(c echo.Context) error {
 		return err
 	}
 
+	accountID, err := strconv.Atoi(c.FormValue("account_id"))
+	if err != nil {
+		return nil
+	}
+	post.AccountID = accountID
+
 	dt := time.Now().Format("01-02-2006 15:04:05 Monday")
 
 	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at) VALUES($1,$2,$3,$4,$5,$6)"
-	_, err := p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, dt, dt)
+	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, dt, dt)
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusCreated, "Account created")
+	return c.JSON(http.StatusCreated, "Post created")
 }
 
 //GetAllPostByLimit get all post from db limit db params
 func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 
 	limit := c.QueryParam("limit")
+
 	queryString := "SELECT * FROM post ORDER BY created_at DESC LIMIT $1"
+
 	rows, err := p.DB.Query(queryString, limit)
 	if err != nil {
 		return err
