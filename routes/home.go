@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-// Index all routes
+// Home the beginning of greatness
 func Home(app *echo.Echo) {
 	app.GET("/", controller.Welcome)
 }
