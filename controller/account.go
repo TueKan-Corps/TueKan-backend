@@ -33,8 +33,14 @@ func (a *AccountController) Create(c echo.Context) error {
 	}
 	account.CoinAmount = coinAmount
 
-	queryString := "INSERT INTO account (username,password,coin_amount) VALUES ($1,$2,$3)"
-	_, err = a.DB.Exec(queryString, account.Username, account.Password, account.CoinAmount)
+	queryString := "INSERT INTO account (username,password,coin_amount,first_name,last_name) VALUES ($1,$2,$3,$4,$5)"
+	_, err = a.DB.Exec(queryString,
+		account.Username,
+		account.Password,
+		account.CoinAmount,
+		account.FirstName,
+		account.LastName)
+
 	if err != nil {
 		return err
 	}
@@ -56,12 +62,18 @@ func (a *AccountController) GetAll(c echo.Context) error {
 	for rows.Next() {
 		account := new(model.Account)
 
-		err := rows.Scan(&account.ID, &account.Username, &account.Password, &account.CoinAmount)
+		err := rows.Scan(&account.ID,
+			&account.Username,
+			&account.Password,
+			&account.CoinAmount,
+			&account.FirstName,
+			&account.LastName)
+
 		if err != nil {
-			return nil
+			return err
 		}
 		accounts = append(accounts, account)
 	}
-	c.JSON(http.StatusOK, accounts)
-	return nil
+
+	return c.JSON(http.StatusOK, accounts)
 }
