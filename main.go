@@ -4,22 +4,22 @@ import (
 	"TueKan-backend/config"
 	"TueKan-backend/db"
 	"TueKan-backend/routes"
-	"log"
-
+	"fmt"
 	"github.com/labstack/echo"
+	"log"
 )
 
 func main() {
-	var config config.Config
+	var c config.Config
 
 	// Load secret from .env file
-	err := config.Init()
+	err := c.Init()
 	if err != nil {
 		log.Fatal("Load .env failed", err)
 	}
 
 	// Connect to DB
-	err = db.Init(&config)
+	err = db.Init(&c)
 	if err != nil {
 		log.Fatal("Create a connection to db failed", err)
 	}
@@ -29,5 +29,7 @@ func main() {
 	routes.Home(app)
 	routes.Account(app)
 	routes.Post(app)
-	app.Logger.Fatal(app.Start(":1323"))
+
+	var port = fmt.Sprintf(":%s", c.Port)
+	app.Logger.Fatal(app.Start(port))
 }
