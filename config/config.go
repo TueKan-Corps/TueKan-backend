@@ -13,6 +13,7 @@ type Config struct {
 	DBPort string
 	DBPass string
 	DB     string
+	Port   string
 }
 
 func (config *Config) Init() error {
@@ -26,6 +27,13 @@ func (config *Config) Init() error {
 	config.DBPort = os.Getenv("DB_PORT")
 	config.DBPass = os.Getenv("DB_PASS")
 	config.DB = os.Getenv("DB")
+
+	var ok bool
+	config.Port, ok = os.LookupEnv("PORT")
+
+	if ok == false {
+		config.Port = "1323"
+	}
 
 	return nil
 }
