@@ -3,6 +3,7 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -22,7 +23,7 @@ func NewPostController(db *sql.DB) *PostController {
 
 //CreatePost from json body
 func (p *PostController) CreatePost(c echo.Context) error {
-	post := new(model.CreatePost)
+	post := new(model.Post)
 
 	if err := c.Bind(post); err != nil {
 		return err
@@ -34,11 +35,14 @@ func (p *PostController) CreatePost(c echo.Context) error {
 	}
 	post.AccountID = accountID
 
-	dt := time.Now().Format("01-02-2006 15:04:05 Monday")
+	heldAt := c.FormValue("held_at")
 
-	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at) VALUES($1,$2,$3,$4,$5,$6)"
-	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, dt, dt)
+	currentTime := time.Now().Format("01-02-2006 15:04:05 Monday")
+
+	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,held_at,tag) VALUES($1,$2,$3,$4,$5,$6,$7,$8)"
+	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, heldAt, post.Tag)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return c.JSON(http.StatusCreated, "Post created")
@@ -61,7 +65,7 @@ func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 	for rows.Next() {
 		post := new(model.Post)
 
-		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt)
+		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt, &post.HeldAt, &post.Tag)
 		if err != nil {
 			return err
 		}

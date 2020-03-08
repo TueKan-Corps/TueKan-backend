@@ -9,12 +9,6 @@ type Post struct {
 	Description string `json:"description" db:"description"`
 	UpdatedAt   string `json:"updated_at" db:"updated_at"`
 	CreatedAt   string `json:"created_at" db:"created_at"`
-}
-
-//CreatePost model
-type CreatePost struct {
-	AccountID   int    `json:"account_id" from:"account_id" query:"account_id"`
-	Topic       string `json:"topic" from:"topic" query:"topic"`
-	Location    string `json:"location" from:"location" query:"location"`
-	Description string `json:"description" from:"description" query:"description"`
+	HeldAt      string `json:"held_at" db:"held_at"`
+	Tag         string `json:"tag" db:"tag"`
 }
