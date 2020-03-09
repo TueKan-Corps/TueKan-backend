@@ -22,7 +22,7 @@ func NewPostController(db *sql.DB) *PostController {
 
 //CreatePost from json body
 func (p *PostController) CreatePost(c echo.Context) error {
-	post := new(model.CreatePost)
+	post := new(model.Post)
 
 	if err := c.Bind(post); err != nil {
 		return err
@@ -34,10 +34,20 @@ func (p *PostController) CreatePost(c echo.Context) error {
 	}
 	post.AccountID = accountID
 
-	dt := time.Now().Format("01-02-2006 15:04:05 Monday")
+	var maxParticipant int
+	maxParticipant, err = strconv.Atoi(c.FormValue("max_participant"))
+	if err != nil {
+		return nil
+	}
+	post.MaxParticipant = maxParticipant
 
-	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at) VALUES($1,$2,$3,$4,$5,$6)"
-	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, dt, dt)
+	// I dunno but bind function failed to bind this
+	heldAt := c.FormValue("held_at")
+
+	currentTime := time.Now().Format("01-02-2006 15:04:05 Monday")
+
+	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,held_at,tag,max_participant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)"
+	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, heldAt, post.Tag, post.MaxParticipant)
 	if err != nil {
 		return err
 	}
@@ -61,10 +71,11 @@ func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 	for rows.Next() {
 		post := new(model.Post)
 
-		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt)
+		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt, &post.HeldAt, &post.Tag, &post.MaxParticipant)
 		if err != nil {
 			return err
 		}
+
 		posts = append(posts, post)
 	}
 
