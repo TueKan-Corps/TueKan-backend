@@ -13,7 +13,7 @@ func Account(app *echo.Echo) {
 
 	accountRoute := app.Group("/account")
 	accountRoute.POST("/", accountController.Create)
-	accountRoute.POST("/:id/img",accountController.UploadProfileIMG)
+	accountRoute.POST("/:id/img", accountController.UploadProfileIMG)
 	accountRoute.GET("/", accountController.GetAll)
-	//TODO accountRoute.GET("/:id/img",accountController.GetProfileIMG)
+	accountRoute.GET("/:id/img", accountController.GetProfileIMG)
 }
