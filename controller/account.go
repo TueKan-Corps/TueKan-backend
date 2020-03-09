@@ -3,7 +3,10 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/labstack/echo"
@@ -51,7 +54,8 @@ func (a *AccountController) Create(c echo.Context) error {
 // GetAll get all account
 func (a *AccountController) GetAll(c echo.Context) error {
 
-	queryString := "SELECT * FROM account ORDER BY id"
+	queryString := "SELECT id,username,password,coin_amount,first_name,last_name FROM account ORDER BY id"
+
 	rows, err := a.DB.Query(queryString)
 	if err != nil {
 		return err
@@ -70,10 +74,54 @@ func (a *AccountController) GetAll(c echo.Context) error {
 			&account.LastName)
 
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
+
+
 		accounts = append(accounts, account)
 	}
 
 	return c.JSON(http.StatusOK, accounts)
+}
+
+func (a *AccountController) UploadProfileIMG(c echo.Context) error {
+
+	accountID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	// receive file from user
+	file, err :=  c.FormFile("profile_img")
+	if err != nil{
+		return err
+	}
+	src, err := file.Open()
+	if err != nil{
+		return err
+	}
+	defer src.Close()
+
+	// Destination
+	imgPath :=  "./img/"+fmt.Sprintf("%d",accountID)+".jpg"
+	dst, err := os.Create(imgPath)
+	if err!= nil{
+		return err
+	}
+	defer dst.Close()
+
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	// Save the file path in db
+	queryString := "UPDATE account SET profile_img_path=$1 WHERE id=$2"
+	_, err = a.DB.Exec(queryString,imgPath,accountID)
+	if err != nil{
+		return err
+	}
+
+	return c.JSON(http.StatusOK, "Profile image uploaded")
 }
