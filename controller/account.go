@@ -74,10 +74,8 @@ func (a *AccountController) GetAll(c echo.Context) error {
 			&account.LastName)
 
 		if err != nil {
-			fmt.Println(err)
 			return err
 		}
-
 
 		accounts = append(accounts, account)
 	}
@@ -85,6 +83,7 @@ func (a *AccountController) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, accounts)
 }
 
+// UploadProfileIMG upload a profile image
 func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 
 	accountID, err := strconv.Atoi(c.Param("id"))
@@ -93,20 +92,20 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 	}
 
 	// receive file from user
-	file, err :=  c.FormFile("profile_img")
-	if err != nil{
+	file, err := c.FormFile("profile_img")
+	if err != nil {
 		return err
 	}
 	src, err := file.Open()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	defer src.Close()
 
 	// Destination
-	imgPath :=  "./img/"+fmt.Sprintf("%d",accountID)+".jpg"
+	imgPath := "./img/" + fmt.Sprintf("%d", accountID) + ".jpg"
 	dst, err := os.Create(imgPath)
-	if err!= nil{
+	if err != nil {
 		return err
 	}
 	defer dst.Close()
@@ -118,10 +117,30 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 
 	// Save the file path in db
 	queryString := "UPDATE account SET profile_img_path=$1 WHERE id=$2"
-	_, err = a.DB.Exec(queryString,imgPath,accountID)
-	if err != nil{
+	_, err = a.DB.Exec(queryString, imgPath, accountID)
+	if err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusOK, "Profile image uploaded")
+}
+
+// GetProfileIMG get account profile image
+func (a *AccountController) GetProfileIMG(c echo.Context) error {
+
+	accountID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	queryString := "SELECT profile_img_path FROM account WHERE id=$1"
+	row := a.DB.QueryRow(queryString, accountID)
+
+	var filepath string
+	err = row.Scan(&filepath)
+	if err != nil {
+		return err
+	}
+
+	return c.File(filepath)
 }
