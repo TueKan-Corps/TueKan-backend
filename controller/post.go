@@ -46,8 +46,8 @@ func (p *PostController) CreatePost(c echo.Context) error {
 
 	currentTime := time.Now().Format("01-02-2006 15:04:05 Monday")
 
-	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,held_at,tag,max_participant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)"
-	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, heldAt, post.Tag, post.MaxParticipant)
+	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,held_at,tag_id,max_participant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)"
+	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, heldAt, post.TagID, post.MaxParticipant)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 
 	limit := c.QueryParam("limit")
 
-	queryString := "SELECT * FROM post ORDER BY created_at DESC LIMIT $1"
+	queryString := "SELECT p.id,p.account_id,p.topic,p.location,p.description,p.updated_at,p.created_at,p.held_at,p.tag_id,p.max_participant,s.subject_name FROM post p LEFT JOIN  subject s ON p.tag_id = s.tag_id ORDER BY created_at DESC LIMIT $1"
 
 	rows, err := p.DB.Query(queryString, limit)
 	if err != nil {
@@ -71,7 +71,7 @@ func (p *PostController) GetAllPostByLimit(c echo.Context) error {
 	for rows.Next() {
 		post := new(model.Post)
 
-		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.CreatedAt, &post.UpdatedAt, &post.HeldAt, &post.Tag, &post.MaxParticipant)
+		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.UpdatedAt, &post.CreatedAt, &post.HeldAt, &post.TagID, &post.MaxParticipant, &post.SubjectName)
 		if err != nil {
 			return err
 		}

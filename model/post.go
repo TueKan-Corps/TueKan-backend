@@ -10,6 +10,7 @@ type Post struct {
 	UpdatedAt      string `json:"updated_at" db:"updated_at"`
 	CreatedAt      string `json:"created_at" db:"created_at"`
 	HeldAt         string `json:"held_at" db:"held_at"`
-	Tag            string `json:"tag" db:"tag"`
+	TagID          int    `json:"tag_id" db:"tag_id"`
 	MaxParticipant int    `json:"max_participant" db:"max_participant"`
+	SubjectName    string `json:"subject_name" db:"subject_name"`
 }
