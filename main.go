@@ -29,6 +29,7 @@ func main() {
 	routes.Home(app)
 	routes.Account(app)
 	routes.Post(app)
+	routes.Subject(app)
 
 	var port = fmt.Sprintf(":%s", c.Port)
 	app.Logger.Fatal(app.Start(port))
