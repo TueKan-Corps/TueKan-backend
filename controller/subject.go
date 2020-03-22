@@ -6,60 +6,57 @@ import (
 	"fmt"
 	"github.com/labstack/echo"
 	"net/http"
-
 )
 
-//PostController for Post model
+// SubjectController for Post model
 type SubjectController struct {
 	DB *sql.DB
 }
 
-//NewPostController create  Post controller
+// NewSubjectController create  Post controller
 func NewSubjectController(db *sql.DB) *SubjectController {
 	return &SubjectController{DB: db}
 }
 
+func (s *SubjectController) CreateNewSubject(c echo.Context) error {
+	subject := new(model.Subject)
 
-func (S *SubjectController)CreateNewSubject( c echo.Context) error{
-	subject:=new(model.Subject)
-
-	if err := c.Bind(subject); err != nil{
+	if err := c.Bind(subject); err != nil {
 		return err
 	}
 
 	queryString := "INSERT INTO subject(subject_name) VALUES($1)"
-
-	_, err := S.DB.Exec(queryString,subject.SubjectName)
+	fmt.Println(subject.SubjectName)
+	_, err := s.DB.Exec(queryString, subject.SubjectName)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return c.JSON(http.StatusCreated, "Subject Created")
 
 }
 
-func (S *SubjectController)GetAllSubject(c echo.Context)error{
+func (s *SubjectController) GetAllSubject(c echo.Context) error {
 
-	queryString :="SELECT * FROM subject"
+	queryString := "SELECT * FROM subject"
 
-	rows,err := S.DB.Query(queryString)
-	if err != nil{
+	rows, err := s.DB.Query(queryString)
+	if err != nil {
 		return err
 	}
 
 	defer rows.Close()
 
-	subjects := make([]*model.Subject,0)
-	for rows.Next(){
+	subjects := make([]*model.Subject, 0)
+	for rows.Next() {
 		subject := new(model.Subject)
 
-		err := rows.Scan(&subject.TagID,&subject.SubjectName)
+		err := rows.Scan(&subject.TagID, &subject.SubjectName)
 		if err != nil {
 			return err
 		}
 
-		subjects = append(subjects,subject)
+		subjects = append(subjects, subject)
 	}
 
-	return c.JSON(http.StatusOK,subjects)
+	return c.JSON(http.StatusOK, subjects)
 }
