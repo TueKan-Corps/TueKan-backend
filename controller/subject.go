@@ -3,7 +3,6 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
-	"fmt"
 	"github.com/labstack/echo"
 	"net/http"
 )
@@ -19,15 +18,11 @@ func NewSubjectController(db *sql.DB) *SubjectController {
 }
 
 func (s *SubjectController) CreateNewSubject(c echo.Context) error {
-	subject := new(model.Subject)
 
-	if err := c.Bind(subject); err != nil {
-		return err
-	}
+	subjectName := c.FormValue("subject_name")
 
 	queryString := "INSERT INTO subject(subject_name) VALUES($1)"
-	fmt.Println(subject.SubjectName)
-	_, err := s.DB.Exec(queryString, subject.SubjectName)
+	_, err := s.DB.Exec(queryString, subjectName)
 	if err != nil {
 		return err
 	}

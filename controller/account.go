@@ -36,6 +36,9 @@ func (a *AccountController) Create(c echo.Context) error {
 	}
 	account.CoinAmount = coinAmount
 
+	account.FirstName = c.FormValue("first_name")
+	account.LastName = c.FormValue("last_name")
+
 	queryString := "INSERT INTO account (username,password,coin_amount,first_name,last_name) VALUES ($1,$2,$3,$4,$5)"
 	_, err = a.DB.Exec(queryString,
 		account.Username,
