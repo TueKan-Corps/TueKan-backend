@@ -30,24 +30,27 @@ func (p *PostController) CreatePost(c echo.Context) error {
 
 	accountID, err := strconv.Atoi(c.FormValue("account_id"))
 	if err != nil {
-		return nil
+		return err
 	}
 	post.AccountID = accountID
 
-	var maxParticipant int
-	maxParticipant, err = strconv.Atoi(c.FormValue("max_participant"))
+	post.MaxParticipant, err = strconv.Atoi(c.FormValue("max_participant"))
 	if err != nil {
-		return nil
+		return err
 	}
-	post.MaxParticipant = maxParticipant
 
-	// I dunno but bind function failed to bind this
-	heldAt := c.FormValue("held_at")
+	post.TagID, err = strconv.Atoi(c.FormValue("tag_id"))
+	if err != nil {
+		return err
+	}
+
+	post.HeldAt = c.FormValue("held_at")
 
 	currentTime := time.Now().Format("01-02-2006 15:04:05 Monday")
 
 	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,held_at,tag_id,max_participant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)"
-	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, heldAt, post.TagID, post.MaxParticipant)
+
+	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, post.HeldAt, post.TagID, post.MaxParticipant)
 	if err != nil {
 		return err
 	}
