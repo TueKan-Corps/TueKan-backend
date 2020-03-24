@@ -2,8 +2,6 @@ package config
 
 import (
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 // Config basic config of an app
@@ -17,10 +15,6 @@ type Config struct {
 }
 
 func (config *Config) Init() error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
-	}
 
 	config.DBHost = os.Getenv("DB_HOST")
 	config.DBUser = os.Getenv("DB_USER")
