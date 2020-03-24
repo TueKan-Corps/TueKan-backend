@@ -39,14 +39,23 @@ func (a *AccountController) Create(c echo.Context) error {
 	account.FirstName = c.FormValue("first_name")
 	account.LastName = c.FormValue("last_name")
 
-	queryString := "INSERT INTO account (username,password,coin_amount,first_name,last_name) VALUES ($1,$2,$3,$4,$5)"
+	account.Contact = getContactFromContext(c)
+
+	// insert general info
+	queryString := `INSERT INTO account (username,password,coin_amount,first_name,last_name,contact) 
+					VALUES ($1,$2,$3,$4,$5,
+					ARRAY[$6,$7,$8,$9,$10])`
 	_, err = a.DB.Exec(queryString,
 		account.Username,
 		account.Password,
 		account.CoinAmount,
 		account.FirstName,
-		account.LastName)
-
+		account.LastName,
+		account.Contact[0].Link,
+		account.Contact[1].Link,
+		account.Contact[2].Link,
+		account.Contact[3].Link,
+		account.Contact[4].Link)
 	if err != nil {
 		return err
 	}
@@ -76,6 +85,7 @@ func (a *AccountController) GetAll(c echo.Context) error {
 			&account.FirstName,
 			&account.LastName)
 
+		account.Contact, err = getContactFromDB(a.DB, account.ID)
 		if err != nil {
 			return err
 		}
@@ -146,4 +156,45 @@ func (a *AccountController) GetProfileIMG(c echo.Context) error {
 	}
 
 	return c.File(filepath)
+}
+
+func getContactFromContext(c echo.Context) [5]model.Contact {
+	var contacts [5]model.Contact
+	contactList := []string{"facebook", "instagram", "youtube", "email", "website"}
+
+	for i := 1; i < 6; i++ {
+		contacts[i-1] = model.Contact{
+			ID:   i,
+			Name: contactList[i-1],
+			Link: c.FormValue(contactList[i-1]),
+		}
+	}
+
+	return contacts
+}
+
+func getContactFromDB(db *sql.DB, id int) ([5]model.Contact, error) {
+	var contacts [5]model.Contact
+	contactList := []string{"facebook", "instagram", "youtube", "email", "website"}
+
+	queryString := "SELECT contact[$1] FROM account WHERE id=$2"
+
+	for i := 1; i < 6; i++ {
+
+		var link string
+
+		row := db.QueryRow(queryString, i, id)
+		err := row.Scan(&link)
+		if err != nil {
+			return [5]model.Contact{}, err
+		}
+
+		contacts[i-1] = model.Contact{
+			ID:   i,
+			Name: contactList[i-1],
+			Link: link,
+		}
+	}
+
+	return contacts, nil
 }
