@@ -32,3 +32,13 @@ func (a *Account) HashAndSaltPassword() error {
 	a.Password = string(hash)
 	return nil
 }
+
+func (a *Account) ComparePassword(plainPassword string) error {
+	byteHash := []byte(a.Password)
+	err := bcrypt.CompareHashAndPassword(byteHash, []byte(plainPassword))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
