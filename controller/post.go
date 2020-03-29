@@ -43,13 +43,7 @@ func (p *PostController) GetPostList(c echo.Context) error {
 		startDate := []rune(post.StartTime)
 		stopDate := []rune(post.StopTime)
 
-		date := string(startDate[0:10])
-		length := len(startDate)
-		var startTime = string(startDate[11:length])
-		var stopTime = string(stopDate[11:length])
-		post.Date = date
-		post.StartTime = startTime
-		post.StopTime = stopTime
+	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,start_at,tag_id,max_participant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)"
 
 		postList = append(postList, post)
 	}
@@ -60,10 +54,7 @@ func (p *PostController) GetPostList(c echo.Context) error {
 //GetPosting get your post by account id
 func (p *PostController) GetPosting(c echo.Context) error {
 
-	accountID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return err
-	}
+	queryString := "SELECT p.id,p.account_id,p.topic,p.location,p.description,p.updated_at,p.created_at,p.start_at,p.tag_id,p.max_participant,s.subject_name FROM post p LEFT JOIN  subject s ON p.tag_id = s.tag_id ORDER BY created_at DESC LIMIT $1"
 
 	queryString := "SELECT p.id, s.subject_name as tag, p.tag_id, p.topic, p.location, a.username     as tutor, tic.cnt        as amount, p.max_participant as max, p.start_at, p.end_at, p.price, p.description, par.list FROM post p INNER JOIN subject s on P.tag_id = s.tag_id INNER JOIN account a on p.account_id = a.id INNER JOIN (SELECT post_id, count(post_id) AS cnt FROM ticket GROUP BY post_id) tic on p.id = tic.post_id INNER JOIN (SELECT post_id, json_agg(json_build_object('id', account_id, 'ticket', access_code, 'first_name', a2.first_name, 'last_name', a2.last_name)) as list FROM ticket INNER JOIN account a2 on ticket.account_id = a2.id group by post_id) par on par.post_id = p.id where p.account_id = $1"
 	rows, err := p.DB.Query(queryString, accountID)

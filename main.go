@@ -33,7 +33,7 @@ func main() {
 	routes.Account(app)
 	routes.Post(app)
 	routes.Subject(app)
-	routes.Ticket(app)
+	routes.Auth(app)
 
 	var port = fmt.Sprintf(":%s", c.Port)
 
