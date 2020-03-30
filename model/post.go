@@ -1,16 +1,35 @@
 package model
 
-//Post model
-type Post struct {
-	ID             int    `json:"id" db:"id"`
-	AccountID      int    `json:"account_id" db:"account_id"`
-	Topic          string `json:"topic" db:"topic"`
-	Location       string `json:"location" db:"location"`
-	Description    string `json:"description" db:"description"`
-	UpdatedAt      string `json:"updated_at" db:"updated_at"`
-	CreatedAt      string `json:"created_at" db:"created_at"`
-	HeldAt         string `json:"held_at" db:"held_at"`
-	TagID          int    `json:"tag_id" db:"tag_id"`
-	MaxParticipant int    `json:"max_participant" db:"max_participant"`
-	SubjectName    string `json:"subject_name" db:"subject_name"`
+//PostList end point return all post list
+type PostList struct {
+	ID        int    `json:"id" db:"id"`
+	Tag       string `json:"tag " db:"tag"`
+	TagID     int    `json:"tag_id" db:"tag_id"`
+	Topic     string `json:"topic" db:"topic"`
+	Location  string `json:"location" db:"location"`
+	Tutor     string `json:"tutor" db:"tutor"`
+	Amount    int    `json:"amount" db:"amount"`
+	Date      string `json:"date"`
+	Full      int    `json:"full" db:"max_participant"`
+	StartTime string `json:"start_time" db:"start_at"`
+	StopTime  string `json:"stop_time" db:"stop_at"`
+	Price     int    `json:"price" db:"price"`
+}
+
+//Posting for your posting data
+type Posting struct {
+	ID          int    `json:"id" db:"id"`
+	Tag         string `json:"tag " db:"tag"`
+	TagID       int    `json:"tag_id" db:"tag_id"`
+	Topic       string `json:"topic" db:"topic"`
+	Location    string `json:"location" db:"location"`
+	Tutor       string `json:"tutor" db:"tutor"`
+	Amount      int    `json:"amount" db:"amount"`
+	Date        string `json:"date"`
+	Full        int    `json:"full" db:"max"`
+	StartTime   string `json:"start_time" db:"start_at"`
+	StopTime    string `json:"stop_time" db:"stop_at"`
+	Price       int    `json:"price" db:"price"`
+	Participant string `json:"participant" db:"list"`
+	Description string `json:"description" db:"description"`
 }
