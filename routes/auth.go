@@ -13,4 +13,5 @@ func Auth(app *echo.Echo) {
 
 	accountRoute := app.Group("/auth")
 	accountRoute.POST("/login", accountController.Login)
+	accountRoute.POST("/logout", accountController.Logout)
 }
