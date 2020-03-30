@@ -12,6 +12,6 @@ func Post(app *echo.Echo) {
 	postController := controller.NewPostController(db.DB)
 
 	postRoute := app.Group("/post")
-	postRoute.POST("/", postController.CreatePost)
-	postRoute.GET("/", postController.GetAllPostByLimit)
+	postRoute.GET("/", postController.GetPostList)
+
 }
