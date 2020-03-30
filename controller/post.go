@@ -19,6 +19,7 @@ func NewPostController(db *sql.DB) *PostController {
 	return &PostController{DB: db}
 }
 
+//GetPostList get All PostList
 func (p *PostController) GetPostList(c echo.Context) error {
 
 	queryString := "SELECT p.id , s.subject_name as tag , p.tag_id , p.topic,p.location, a.username as tutor ,tic.amount,p.max_participant,p.start_at,p.end_at,p.price    from post p inner join account a on p.account_id = a.id inner join subject s on p.tag_id = s.tag_id INNER JOIN (SELECT post_id,count(post_id) as amount from ticket group by post_id) tic on p.id = tic.post_id"
