@@ -12,4 +12,5 @@ func Session(app *echo.Echo) {
 
 	sessionRoute := app.Group("/session")
 	sessionRoute.GET("/", sessionController.GetAll)
+	sessionRoute.DELETE("/", sessionController.ClearAll)
 }
