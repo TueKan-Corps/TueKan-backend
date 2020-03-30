@@ -14,5 +14,5 @@ require (
 	github.com/lib/pq v1.3.0
 	github.com/mattn/go-shellwords v1.0.10 // indirect
 	github.com/stretchr/testify v1.4.0
-	golang.org/x/crypto v0.0.0-20200208060501-ecb85df21340 // indirect
+	golang.org/x/crypto v0.0.0-20200208060501-ecb85df21340
 )

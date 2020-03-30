@@ -1,5 +1,9 @@
 package model
 
+import (
+	"golang.org/x/crypto/bcrypt"
+)
+
 // Contact type
 type Contact struct {
 	ID   int
@@ -17,4 +21,24 @@ type Account struct {
 	CoinAmount     int        `json:"coin_amount" db:"coin_amount"`
 	ProfileIMGPath string     `json:"profile_img_path,omitempty" db:"profile_img_path,omitempty"`
 	Contact        [5]Contact `json:"contact" db:"contact"`
+}
+
+func (a *Account) HashAndSaltPassword() error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+
+	a.Password = string(hash)
+	return nil
+}
+
+func (a *Account) ComparePassword(plainPassword string) error {
+	byteHash := []byte(a.Password)
+	err := bcrypt.CompareHashAndPassword(byteHash, []byte(plainPassword))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
