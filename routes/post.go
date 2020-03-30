@@ -13,5 +13,6 @@ func Post(app *echo.Echo) {
 
 	postRoute := app.Group("/post")
 	postRoute.GET("/", postController.GetPostList)
+	postRoute.GET("/posting/:id", postController.GetPosting)
 
 }
