@@ -61,3 +61,16 @@ func (a *AccountController) Login(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, session)
 }
+
+func (a *AccountController) Logout(c echo.Context) error {
+	inputToken := c.FormValue("token")
+
+	// delete a session
+	queryString := "DELETE FROM session WHERE token=$1"
+	_, err := a.DB.Exec(queryString, inputToken)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, "logged out")
+}
