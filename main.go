@@ -34,6 +34,7 @@ func main() {
 	routes.Post(app)
 	routes.Subject(app)
 	routes.Auth(app)
+	routes.Session(app)
 
 	var port = fmt.Sprintf(":%s", c.Port)
 
