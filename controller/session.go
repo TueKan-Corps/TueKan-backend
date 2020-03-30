@@ -45,3 +45,13 @@ func (s *SessionController) GetAll(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, sessions)
 }
+
+func (s *SessionController) ClearAll(c echo.Context) error {
+
+	queryString := "DELETE FROM session"
+	if _, err := s.DB.Exec(queryString); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, "all cleared")
+}
