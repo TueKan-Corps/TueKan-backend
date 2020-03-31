@@ -3,7 +3,9 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
+	"fmt"
 	"strconv"
+	"time"
 
 	"net/http"
 
@@ -89,5 +91,41 @@ func (p *PostController) GetPosting(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, postingList)
+
+}
+
+func (p *PostController) CreatePost(c echo.Context) error {
+
+	post := new(model.CreatePost)
+
+	if err := c.Bind(post); err != nil {
+		return err
+	}
+
+	updateAt := time.Now().Format("01-02-2006 15:04:05")
+	createAt := updateAt
+	startAt := post.Date + " " + post.StartTime
+	endAt := post.Date + " " + post.StopTime
+
+	fmt.Print(post.Topic)
+	fmt.Println(post.Location)
+	fmt.Println(post.Description)
+	fmt.Println(updateAt)
+	fmt.Println(createAt)
+	fmt.Println(startAt)
+	fmt.Println(endAt)
+
+	queryString := "INSERT INTO post( account_id, topic, location, description, updated_at, created_at, start_at, end_at, max_participant, tag_id, price) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)"
+	_, err := p.DB.Query(queryString, post.AccountID, post.Topic, post.Location, post.Description, updateAt, createAt, startAt, endAt, post.Max, post.Category, post.Price)
+	if err != nil {
+		return err
+	}
+	//queryString := "INSERT INTO post( account_id, topic, location, description, updated_at, created_at, start_at, end_at, max_participant, tag_id, price) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)"
+	//_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, updateAt, createAt, startAt, endAt, post.Max, post.Category, post.Price)
+	//if err != nil {
+	//	return err
+	//}
+
+	return c.JSON(http.StatusCreated, "Post created")
 
 }
