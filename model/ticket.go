@@ -16,3 +16,9 @@ type TicketList struct {
 	Ticket      int    `json:"ticket" db:"access_code"`
 	Description string `json:"description" db:"description"`
 }
+
+type RedeemTicket struct {
+	PostID     int  `json:"post_id" db:"post_id"`
+	AccessCode int  `json:"access_code" db:"access_code"`
+	IsRedeem   bool `json:"is_redeem" db:"is_redeem"`
+}
