@@ -71,7 +71,7 @@ func (a *AccountController) Create(c echo.Context) error {
 // GetAll get all account
 func (a *AccountController) GetAll(c echo.Context) error {
 
-	queryString := "SELECT id,username,password,coin_amount,first_name,last_name FROM account ORDER BY id"
+	queryString := "SELECT id,username,password,coin_amount,first_name,last_name,description FROM account ORDER BY id"
 
 	rows, err := a.DB.Query(queryString)
 	if err != nil {
@@ -88,7 +88,8 @@ func (a *AccountController) GetAll(c echo.Context) error {
 			&account.Password,
 			&account.CoinAmount,
 			&account.FirstName,
-			&account.LastName)
+			&account.LastName,
+			&account.Description)
 
 		account.Contact, err = getContactFromDB(a.DB, account.ID)
 		if err != nil {
@@ -202,4 +203,38 @@ func getContactFromDB(db *sql.DB, id int) ([5]model.Contact, error) {
 	}
 
 	return contacts, nil
+}
+
+func (a *AccountController) GetAccountById(c echo.Context) error {
+
+	accountID, err := strconv.Atoi(c.Param("id"))
+	queryString := "SELECT id,username,password,coin_amount,first_name,last_name,description FROM account WHERE id = $1"
+
+	rows, err := a.DB.Query(queryString, accountID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	accounts := make([]*model.Account, 0)
+	for rows.Next() {
+		account := new(model.Account)
+
+		err := rows.Scan(&account.ID,
+			&account.Username,
+			&account.Password,
+			&account.CoinAmount,
+			&account.FirstName,
+			&account.LastName,
+			&account.Description)
+
+		account.Contact, err = getContactFromDB(a.DB, account.ID)
+		if err != nil {
+			return err
+		}
+
+		accounts = append(accounts, account)
+	}
+
+	return c.JSON(http.StatusOK, accounts)
 }
