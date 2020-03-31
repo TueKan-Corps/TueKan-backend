@@ -58,3 +58,21 @@ func (t *TicketController) GetTicket(c echo.Context) error {
 	return c.JSON(http.StatusOK, ticketList)
 
 }
+
+func (t *TicketController) Redeem(c echo.Context) error {
+	ticketRedeem := new(model.RedeemTicket)
+	if err := c.Bind(ticketRedeem); err != nil {
+		return err
+	}
+
+	accessCode := strconv.Itoa(ticketRedeem.AccessCode)
+
+	queryString := "UPDATE ticket set isredeem = $1 where post_id = $2 and access_code = $3"
+	_, err := t.DB.Query(queryString, ticketRedeem.IsRedeem, ticketRedeem.PostID, accessCode)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusAccepted, "Redeemed")
+
+}

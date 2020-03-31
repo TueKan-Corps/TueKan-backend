@@ -15,7 +15,7 @@ func Ticket(app *echo.Echo) {
 	ticketRoute := app.Group("/ticket")
 
 	ticketRoute.GET("/:id", ticketController.GetTicket)
-
+	ticketRoute.POST("/redeem", ticketController.Redeem)
 	//ticketRoute.GET("/users/:id", func(c echo.Context) error {
 	//	return c.String(http.StatusOK, "/users/:id")
 	//})
