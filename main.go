@@ -13,12 +13,6 @@ import (
 func main() {
 	var c config.Config
 
-	// Load secret from .env file
-	err := c.Init()
-	if err != nil {
-		log.Fatal("Load .env failed", err)
-	}
-
 	// Connect to DB
 	err = db.Init(&c)
 	if err != nil {
