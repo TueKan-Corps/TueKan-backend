@@ -12,6 +12,7 @@ import (
 
 func main() {
 	var c config.Config
+	var err error
 
 	// Connect to DB
 	err = db.Init(&c)
