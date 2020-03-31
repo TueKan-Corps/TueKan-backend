@@ -27,6 +27,7 @@ func main() {
 	}
 
 	app := echo.New()
+	app.Use(middleware.CORS())
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
 
