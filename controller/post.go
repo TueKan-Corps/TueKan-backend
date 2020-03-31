@@ -100,8 +100,11 @@ FROM post p
          INNER JOIN account a on p.account_id = a.id
          left JOIN (SELECT post_id, count(post_id) AS amount FROM ticket GROUP BY post_id) tic on p.id = tic.post_id
          left JOIN (SELECT post_id,
-                           json_agg(json_build_object('id', account_id, 'ticket', access_code, 'first_name',
-                                                      a2.first_name, 'last_name', a2.last_name)) as list
+                           json_agg(json_build_object(	'id', account_id, 
+                               							'ticket', access_code, 
+                               							'first_name',a2.first_name, 
+                               							'last_name', a2.last_name,
+                               							'isRedeem',isredeem)) as list
                     FROM ticket
                              INNER JOIN account a2 on ticket.account_id = a2.id
                     group by post_id) par
