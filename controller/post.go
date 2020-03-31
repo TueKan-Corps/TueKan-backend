@@ -25,7 +25,25 @@ func NewPostController(db *sql.DB) *PostController {
 //GetPostList get All PostList
 func (p *PostController) GetPostList(c echo.Context) error {
 
-	queryString := "SELECT p.id , s.subject_name as tag , p.tag_id , p.topic,p.location, a.username as tutor ,tic.amount,p.max_participant,p.start_at,p.end_at,p.price    from post p inner join account a on p.account_id = a.id inner join subject s on p.tag_id = s.tag_id INNER JOIN (SELECT post_id,count(post_id) as amount from ticket group by post_id) tic on p.id = tic.post_id"
+	queryString := `SELECT 	p.id,
+       						s.subject_name as tag,
+       						p.tag_id,
+       						p.topic,
+       						p.location,
+       						a.username     as tutor,
+       						case
+           						when tic.amount is null then 0
+           						else tic.amount
+           					end,
+       						p.max_participant,
+       						p.start_at,
+       						p.end_at,
+       						p.price
+					from post p
+         					inner join account a on p.account_id = a.id
+         					inner join subject s on p.tag_id = s.tag_id
+         					left JOIN (SELECT post_id, count(post_id) as amount from ticket group by post_id) tic on p.id = tic.post_id
+					order by created_at;`
 	rows, err := p.DB.Query(queryString)
 	if err != nil {
 		return err
@@ -58,7 +76,37 @@ func (p *PostController) GetPosting(c echo.Context) error {
 
 	queryString := "SELECT p.id,p.account_id,p.topic,p.location,p.description,p.updated_at,p.created_at,p.start_at,p.tag_id,p.max_participant,s.subject_name FROM post p LEFT JOIN  subject s ON p.tag_id = s.tag_id ORDER BY created_at DESC LIMIT $1"
 
-	queryString := "SELECT p.id, s.subject_name as tag, p.tag_id, p.topic, p.location, a.username     as tutor, tic.cnt        as amount, p.max_participant as max, p.start_at, p.end_at, p.price, p.description, par.list FROM post p INNER JOIN subject s on P.tag_id = s.tag_id INNER JOIN account a on p.account_id = a.id INNER JOIN (SELECT post_id, count(post_id) AS cnt FROM ticket GROUP BY post_id) tic on p.id = tic.post_id INNER JOIN (SELECT post_id, json_agg(json_build_object('id', account_id, 'ticket', access_code, 'first_name', a2.first_name, 'last_name', a2.last_name)) as list FROM ticket INNER JOIN account a2 on ticket.account_id = a2.id group by post_id) par on par.post_id = p.id where p.account_id = $1"
+	queryString := `SELECT p.id,
+       s.subject_name    as tag,
+       p.tag_id,
+       p.topic,
+       p.location,
+       a.username        as tutor,
+       case
+           when tic.amount is null then 0
+           else tic.amount
+           end,
+       p.max_participant as max,
+       p.start_at,
+       p.end_at,
+       p.price,
+       p.description,
+       case
+           when par.list is null then '[ ]'
+           else par.list
+           end
+FROM post p
+         INNER JOIN subject s on P.tag_id = s.tag_id
+         INNER JOIN account a on p.account_id = a.id
+         left JOIN (SELECT post_id, count(post_id) AS amount FROM ticket GROUP BY post_id) tic on p.id = tic.post_id
+         left JOIN (SELECT post_id,
+                           json_agg(json_build_object('id', account_id, 'ticket', access_code, 'first_name',
+                                                      a2.first_name, 'last_name', a2.last_name)) as list
+                    FROM ticket
+                             INNER JOIN account a2 on ticket.account_id = a2.id
+                    group by post_id) par
+                   on par.post_id = p.id
+where p.account_id = $1`
 	rows, err := p.DB.Query(queryString, accountID)
 	if err != nil {
 		return err
