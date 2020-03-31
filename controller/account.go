@@ -30,6 +30,11 @@ func (a *AccountController) Create(c echo.Context) error {
 		return err
 	}
 
+	// hash password
+	if err := account.HashAndSaltPassword(); err != nil {
+		return err
+	}
+
 	coinAmount, err := strconv.Atoi(c.FormValue("coin_amount"))
 	if err != nil {
 		return err

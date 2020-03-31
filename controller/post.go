@@ -3,9 +3,9 @@ package controller
 import (
 	"TueKan-backend/model"
 	"database/sql"
-	"net/http"
 	"strconv"
-	"time"
+
+	"net/http"
 
 	"github.com/labstack/echo"
 )
@@ -20,67 +20,83 @@ func NewPostController(db *sql.DB) *PostController {
 	return &PostController{DB: db}
 }
 
-//CreatePost from json body
-func (p *PostController) CreatePost(c echo.Context) error {
-	post := new(model.Post)
+//GetPostList get All PostList
+func (p *PostController) GetPostList(c echo.Context) error {
 
-	if err := c.Bind(post); err != nil {
-		return err
-	}
-
-	accountID, err := strconv.Atoi(c.FormValue("account_id"))
-	if err != nil {
-		return err
-	}
-	post.AccountID = accountID
-
-	post.MaxParticipant, err = strconv.Atoi(c.FormValue("max_participant"))
-	if err != nil {
-		return err
-	}
-
-	post.TagID, err = strconv.Atoi(c.FormValue("tag_id"))
-	if err != nil {
-		return err
-	}
-
-	post.HeldAt = c.FormValue("held_at")
-
-	currentTime := time.Now().Format("01-02-2006 15:04:05 Monday")
-
-	queryString := "INSERT INTO post(account_id,topic,location,description,updated_at,created_at,held_at,tag_id,max_participant) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)"
-
-	_, err = p.DB.Exec(queryString, post.AccountID, post.Topic, post.Location, post.Description, currentTime, currentTime, post.HeldAt, post.TagID, post.MaxParticipant)
-	if err != nil {
-		return err
-	}
-	return c.JSON(http.StatusCreated, "Post created")
-}
-
-//GetAllPostByLimit get all post from db limit db params
-func (p *PostController) GetAllPostByLimit(c echo.Context) error {
-
-	limit := c.QueryParam("limit")
-
-	queryString := "SELECT p.id,p.account_id,p.topic,p.location,p.description,p.updated_at,p.created_at,p.held_at,p.tag_id,p.max_participant,s.subject_name FROM post p LEFT JOIN  subject s ON p.tag_id = s.tag_id ORDER BY created_at DESC LIMIT $1"
-
-	rows, err := p.DB.Query(queryString, limit)
+	queryString := "SELECT p.id , s.subject_name as tag , p.tag_id , p.topic,p.location, a.username as tutor ,tic.amount,p.max_participant,p.start_at,p.end_at,p.price    from post p inner join account a on p.account_id = a.id inner join subject s on p.tag_id = s.tag_id INNER JOIN (SELECT post_id,count(post_id) as amount from ticket group by post_id) tic on p.id = tic.post_id"
+	rows, err := p.DB.Query(queryString)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	posts := make([]*model.Post, 0)
+	postList := make([]*model.PostList, 0)
 	for rows.Next() {
-		post := new(model.Post)
 
-		err := rows.Scan(&post.ID, &post.AccountID, &post.Topic, &post.Location, &post.Description, &post.UpdatedAt, &post.CreatedAt, &post.HeldAt, &post.TagID, &post.MaxParticipant, &post.SubjectName)
+		post := new(model.PostList)
+
+		err := rows.Scan(&post.ID, &post.Tag, &post.TagID, &post.Topic, &post.Location, &post.Tutor, &post.Amount, &post.Full, &post.StartTime, &post.StopTime, &post.Price)
 		if err != nil {
 			return err
 		}
 
-		posts = append(posts, post)
+		startDate := []rune(post.StartTime)
+		stopDate := []rune(post.StopTime)
+
+		date := string(startDate[0:10])
+		length := len(startDate)
+		var startTime = string(startDate[11:length])
+		var stopTime = string(stopDate[11:length])
+		post.Date = date
+		post.StartTime = startTime
+		post.StopTime = stopTime
+
+		postList = append(postList, post)
 	}
 
-	return c.JSON(http.StatusOK, posts)
+	return c.JSON(http.StatusOK, postList)
+}
+
+//GetPosting get your post by account id
+func (p *PostController) GetPosting(c echo.Context) error {
+
+	accountID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return err
+	}
+
+	queryString := "SELECT p.id, s.subject_name as tag, p.tag_id, p.topic, p.location, a.username     as tutor, tic.cnt        as amount, p.max_participant as max, p.start_at, p.end_at, p.price, p.description, par.list FROM post p INNER JOIN subject s on P.tag_id = s.tag_id INNER JOIN account a on p.account_id = a.id INNER JOIN (SELECT post_id, count(post_id) AS cnt FROM ticket GROUP BY post_id) tic on p.id = tic.post_id INNER JOIN (SELECT post_id, json_agg(json_build_object('id', account_id, 'ticket', access_code, 'first_name', a2.first_name, 'last_name', a2.last_name)) as list FROM ticket INNER JOIN account a2 on ticket.account_id = a2.id group by post_id) par on par.post_id = p.id where p.account_id = $1"
+	rows, err := p.DB.Query(queryString, accountID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	postingList := make([]*model.Posting, 0)
+
+	for rows.Next() {
+
+		posting := new(model.Posting)
+
+		err := rows.Scan(&posting.ID, &posting.Tag, &posting.TagID, &posting.Topic, &posting.Location, &posting.Tutor, &posting.Amount, &posting.Full, &posting.StartTime, &posting.StopTime, &posting.Price, &posting.Description, &posting.Participant)
+		if err != nil {
+			return err
+		}
+
+		startDate := []rune(posting.StartTime)
+		stopDate := []rune(posting.StopTime)
+
+		date := string(startDate[0:10])
+		length := len(startDate)
+		var startTime = string(startDate[11:length])
+		var stopTime = string(stopDate[11:length])
+		posting.Date = date
+		posting.StartTime = startTime
+		posting.StopTime = stopTime
+
+		postingList = append(postingList, posting)
+	}
+
+	return c.JSON(http.StatusOK, postingList)
+
 }
