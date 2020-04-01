@@ -76,3 +76,23 @@ func (t *TicketController) Redeem(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, "Redeemed")
 
 }
+
+func (t *TicketController) CreateTicket(c echo.Context) error {
+	Ticket := new(model.NewTicket)
+	if err := c.Bind(Ticket); err != nil {
+		return err
+	}
+
+	queryString := `INSERT INTO ticket(account_id, post_id, isredeem, access_code)
+					values ($1, $2, false, (SELECT num
+                       FROM GENERATE_SERIES(1000, 9999) AS s(num)
+                       order by random()
+                       LIMIT 1));`
+	_, err := t.DB.Query(queryString, Ticket.AccountID, Ticket.PostID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusAccepted, "Create Ticket")
+
+}

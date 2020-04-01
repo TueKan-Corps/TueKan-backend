@@ -22,3 +22,8 @@ type RedeemTicket struct {
 	AccessCode int  `json:"access_code" db:"access_code"`
 	IsRedeem   bool `json:"is_redeem" db:"is_redeem"`
 }
+
+type NewTicket struct {
+	AccountID int `json:"account_id"`
+	PostID    int `json:"post_id"`
+}
