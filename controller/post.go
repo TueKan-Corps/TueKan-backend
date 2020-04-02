@@ -43,7 +43,7 @@ func (p *PostController) GetPostList(c echo.Context) error {
          					inner join account a on p.account_id = a.id
          					inner join subject s on p.tag_id = s.tag_id
          					left JOIN (SELECT post_id, count(post_id) as amount from ticket group by post_id) tic on p.id = tic.post_id
-					order by created_at;`
+					order by start_at desc`
 	rows, err := p.DB.Query(queryString)
 	if err != nil {
 		return err
@@ -118,7 +118,8 @@ FROM post p
                              INNER JOIN account a2 on ticket.account_id = a2.id
                     group by post_id) par
                    on par.post_id = p.id
-where p.account_id = $1`
+where p.account_id = $1
+order by start_at desc`
 	rows, err := p.DB.Query(queryString, accountID)
 	if err != nil {
 		return err
