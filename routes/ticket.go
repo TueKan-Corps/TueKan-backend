@@ -16,6 +16,7 @@ func Ticket(app *echo.Echo) {
 
 	ticketRoute.GET("/:id", ticketController.GetTicket)
 	ticketRoute.POST("/redeem", ticketController.Redeem)
+	ticketRoute.POST("/", ticketController.CreateTicket)
 	//ticketRoute.GET("/users/:id", func(c echo.Context) error {
 	//	return c.String(http.StatusOK, "/users/:id")
 	//})
