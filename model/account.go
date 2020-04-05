@@ -51,3 +51,8 @@ type UpdateAccount struct {
 	Description string     `json:"description"`
 	Contact     [5]Contact `json:"contact"`
 }
+
+type UpdateCoins struct {
+	ID   int `json:"id"`
+	Coin int `json:"coin"`
+}
