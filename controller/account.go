@@ -246,12 +246,6 @@ func (a *AccountController) UpdateAccount(c echo.Context) error {
 		return err
 	}
 
-	fmt.Println("ID : ", account.ID)
-	fmt.Println("FirstName : ", account.FirstName)
-	fmt.Println("LastName : ", account.LastName)
-	fmt.Println("Description : ", account.Description)
-	fmt.Println(account.Contact)
-	fmt.Println("=======")
 	queryString := "UPDATE account SET  first_name = $1 , last_name = $2,description = $3, contact = ARRAY[$4,$5,$6,$7,$8]WHERE id = $9"
 	_, err := a.DB.Exec(queryString,
 		account.FirstName,
@@ -268,4 +262,19 @@ func (a *AccountController) UpdateAccount(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, "Account update")
+}
+
+func (a *AccountController) UpdateCoin(c echo.Context) error {
+
+	coin := new(model.UpdateCoins)
+	if err := c.Bind(coin); err != nil {
+		return err
+	}
+	queryString := "UPDATE account SET  coin_amount = $1 WHERE id = $2"
+	_, err := a.DB.Exec(queryString, coin.Coin, coin.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, "Coin update")
 }
