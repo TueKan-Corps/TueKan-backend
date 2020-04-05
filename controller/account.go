@@ -238,3 +238,34 @@ func (a *AccountController) GetAccountById(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, accounts)
 }
+
+func (a *AccountController) UpdateAccount(c echo.Context) error {
+	account := new(model.UpdateAccount)
+
+	if err := c.Bind(account); err != nil {
+		return err
+	}
+
+	fmt.Println("ID : ", account.ID)
+	fmt.Println("FirstName : ", account.FirstName)
+	fmt.Println("LastName : ", account.LastName)
+	fmt.Println("Description : ", account.Description)
+	fmt.Println(account.Contact)
+	fmt.Println("=======")
+	queryString := "UPDATE account SET  first_name = $1 , last_name = $2,description = $3, contact = ARRAY[$4,$5,$6,$7,$8]WHERE id = $9"
+	_, err := a.DB.Exec(queryString,
+		account.FirstName,
+		account.LastName,
+		account.Description,
+		account.Contact[0].Link,
+		account.Contact[1].Link,
+		account.Contact[2].Link,
+		account.Contact[3].Link,
+		account.Contact[4].Link,
+		account.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, "Account update")
+}

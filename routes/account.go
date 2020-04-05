@@ -17,4 +17,5 @@ func Account(app *echo.Echo) {
 	accountRoute.GET("/", accountController.GetAll)
 	accountRoute.GET("/:id/img", accountController.GetProfileIMG)
 	accountRoute.GET("/:id", accountController.GetAccountById)
+	accountRoute.POST("/update", accountController.UpdateAccount)
 }
