@@ -43,3 +43,16 @@ func (a *Account) ComparePassword(plainPassword string) error {
 
 	return nil
 }
+
+type UpdateAccount struct {
+	ID          int        `json:"id"`
+	FirstName   string     `json:"first_name"`
+	LastName    string     `json:"last_name"`
+	Description string     `json:"description"`
+	Contact     [5]Contact `json:"contact"`
+}
+
+type UpdateCoins struct {
+	ID   int `json:"id"`
+	Coin int `json:"coin"`
+}

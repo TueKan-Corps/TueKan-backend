@@ -238,3 +238,43 @@ func (a *AccountController) GetAccountById(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, accounts)
 }
+
+func (a *AccountController) UpdateAccount(c echo.Context) error {
+	account := new(model.UpdateAccount)
+
+	if err := c.Bind(account); err != nil {
+		return err
+	}
+
+	queryString := "UPDATE account SET  first_name = $1 , last_name = $2,description = $3, contact = ARRAY[$4,$5,$6,$7,$8]WHERE id = $9"
+	_, err := a.DB.Exec(queryString,
+		account.FirstName,
+		account.LastName,
+		account.Description,
+		account.Contact[0].Link,
+		account.Contact[1].Link,
+		account.Contact[2].Link,
+		account.Contact[3].Link,
+		account.Contact[4].Link,
+		account.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, "Account update")
+}
+
+func (a *AccountController) UpdateCoin(c echo.Context) error {
+
+	coin := new(model.UpdateCoins)
+	if err := c.Bind(coin); err != nil {
+		return err
+	}
+	queryString := "UPDATE account SET  coin_amount = $1 WHERE id = $2"
+	_, err := a.DB.Exec(queryString, coin.Coin, coin.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, "Coin update")
+}
