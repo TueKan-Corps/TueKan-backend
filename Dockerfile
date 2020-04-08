@@ -12,6 +12,8 @@ RUN apk update && apk add --no-cache git
 # Set the current working directory inside the container
 WORKDIR /app
 
+RUN mkdir img
+
 # Copy go mod and sum files
 COPY go.mod go.sum ./
 

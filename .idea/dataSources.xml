@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="heroku-postgres" uuid="299bb4c2-fdfe-4e83-8ab2-1dd1c26f0b67">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ec2-3-230-106-126.compute-1.amazonaws.com:5432/d67sj0lkgcbok8</jdbc-url>
+    </data-source>
+  </component>
+</project>
