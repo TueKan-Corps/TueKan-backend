@@ -115,6 +115,7 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	src, err := file.Open()
 	if err != nil {
 		return err
