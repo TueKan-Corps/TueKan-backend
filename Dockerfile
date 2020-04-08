@@ -36,8 +36,5 @@ COPY --from=builder /app/main .
 # Expose port to the outside world
 EXPOSE 1323
 
-# Create dir to store img
-RUN mkdir img
-
 #Command to run the executable
 CMD [ "./main" ]
