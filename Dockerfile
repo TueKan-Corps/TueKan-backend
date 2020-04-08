@@ -12,8 +12,6 @@ RUN apk update && apk add --no-cache git
 # Set the current working directory inside the container
 WORKDIR /app
 
-RUN mkdir img
-
 # Copy go mod and sum files
 COPY go.mod go.sum ./
 
@@ -37,6 +35,9 @@ COPY --from=builder /app/main .
 
 # Expose port to the outside world
 EXPOSE 1323
+
+# Create dir to store img
+RUN mkdir img
 
 #Command to run the executable
 CMD [ "./main" ]
