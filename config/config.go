@@ -30,7 +30,7 @@ func (config *Config) Init() error {
 	}
 
 	if _, err := os.Stat("./img"); os.IsNotExist(err) {
-		os.Mkdir("./img", os.ModeDir)
+		os.Mkdir("./img", 0777)
 	}
 
 	return nil
