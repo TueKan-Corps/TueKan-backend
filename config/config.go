@@ -29,5 +29,9 @@ func (config *Config) Init() error {
 		config.Port = "1323"
 	}
 
+	if _, err := os.Stat("./img"); os.IsNotExist(err) {
+		os.Mkdir("./img", os.ModeDir)
+	}
+
 	return nil
 }
