@@ -27,6 +27,7 @@ func (p *PostController) GetPostList(c echo.Context) error {
 
 	queryString := `SELECT 	p.id,
        						s.subject_name as tag,
+       						p.account_id,
        						p.tag_id,
        						p.topic,
        						p.location,
@@ -38,7 +39,8 @@ func (p *PostController) GetPostList(c echo.Context) error {
        						p.max_participant,
        						p.start_at,
        						p.end_at,
-       						p.price
+       						p.price,
+       						p.description
 					from post p
          					inner join account a on p.account_id = a.id
          					inner join subject s on p.tag_id = s.tag_id
@@ -55,7 +57,7 @@ func (p *PostController) GetPostList(c echo.Context) error {
 
 		post := new(model.PostList)
 
-		err := rows.Scan(&post.ID, &post.Tag, &post.TagID, &post.Topic, &post.Location, &post.Tutor, &post.Amount, &post.Full, &post.StartTime, &post.StopTime, &post.Price)
+		err := rows.Scan(&post.ID, &post.Tag, &post.AccountID, &post.TagID, &post.Topic, &post.Location, &post.Tutor, &post.Amount, &post.Full, &post.StartTime, &post.StopTime, &post.Price, &post.Description)
 		if err != nil {
 			return err
 		}
