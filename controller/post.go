@@ -79,6 +79,7 @@ func (p *PostController) GetPosting(c echo.Context) error {
 	queryString := "SELECT p.id,p.account_id,p.topic,p.location,p.description,p.updated_at,p.created_at,p.start_at,p.tag_id,p.max_participant,s.subject_name FROM post p LEFT JOIN  subject s ON p.tag_id = s.tag_id ORDER BY created_at DESC LIMIT $1"
 
 	queryString := `SELECT p.id,
+       p.account_id,
        s.subject_name    as tag,
        p.tag_id,
        p.topic,
@@ -125,7 +126,7 @@ order by start_at desc`
 
 		posting := new(model.Posting)
 
-		err := rows.Scan(&posting.ID, &posting.Tag, &posting.TagID, &posting.Topic, &posting.Location, &posting.Tutor, &posting.Amount, &posting.Full, &posting.StartTime, &posting.StopTime, &posting.Price, &posting.Description, &posting.Participant)
+		err := rows.Scan(&posting.ID, &posting.AccountID, &posting.Tag, &posting.TagID, &posting.Topic, &posting.Location, &posting.Tutor, &posting.Amount, &posting.Full, &posting.StartTime, &posting.StopTime, &posting.Price, &posting.Description, &posting.Participant)
 		if err != nil {
 			return err
 		}
