@@ -34,6 +34,7 @@ type PostList struct {
 //Posting for your posting data
 type Posting struct {
 	ID          int    `json:"id" db:"id"`
+	AccountID   int    `json:"account_id"`
 	Tag         string `json:"tag " db:"tag"`
 	TagID       int    `json:"tag_id" db:"tag_id"`
 	Topic       string `json:"topic" db:"topic"`

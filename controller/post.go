@@ -88,6 +88,7 @@ func (p *PostController) GetPosting(c echo.Context) error {
 	}
 
 	queryString := `SELECT p.id,
+       p.account_id,
        s.subject_name    as tag,
        p.tag_id,
        p.topic,
@@ -134,7 +135,7 @@ order by start_at desc`
 
 		posting := new(model.Posting)
 
-		err := rows.Scan(&posting.ID, &posting.Tag, &posting.TagID, &posting.Topic, &posting.Location, &posting.Tutor, &posting.Amount, &posting.Full, &posting.StartTime, &posting.StopTime, &posting.Price, &posting.Description, &posting.Participant)
+		err := rows.Scan(&posting.ID, &posting.AccountID, &posting.Tag, &posting.TagID, &posting.Topic, &posting.Location, &posting.Tutor, &posting.Amount, &posting.Full, &posting.StartTime, &posting.StopTime, &posting.Price, &posting.Description, &posting.Participant)
 		if err != nil {
 			return err
 		}

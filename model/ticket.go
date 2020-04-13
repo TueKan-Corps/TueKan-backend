@@ -2,6 +2,7 @@ package model
 
 type TicketList struct {
 	ID          int    `json:"id" db:"id"`
+	AccountID   int    `json:"account_id"`
 	Tag         string `json:"tag"  db:"tag"`
 	TagID       int    `json:"tag_id" db:"tag_id"`
 	Topic       string `json:"topic" db:"topic"`
