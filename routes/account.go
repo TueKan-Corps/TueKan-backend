@@ -22,4 +22,5 @@ func Account(app *echo.Echo) {
 	accountRoute.GET("/img/:id", accountController.GetProfileIMG)
 	accountRoute.GET("/:id", accountController.GetAccountById)
 
+	accountRoute.DELETE("/img/cache", accountController.ClearIMGCache)
 }
