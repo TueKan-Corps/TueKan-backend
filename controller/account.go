@@ -139,7 +139,7 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 
 	err = thirdparty.UploadItem(filename)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusNotAcceptable, "couldn't upload")
 	}
 
 	return c.JSON(http.StatusOK, "Profile image uploaded")
@@ -162,7 +162,7 @@ func (a *AccountController) GetProfileIMG(c echo.Context) error {
 
 	err := thirdparty.DownloadItem(filename)
 	if err != nil {
-		return err
+		c.JSON(http.StatusNotFound, "cannot find img")
 	}
 
 	filepath := "./img/" + filename
