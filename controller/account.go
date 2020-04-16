@@ -122,8 +122,10 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 	}
 	defer src.Close()
 
+	filename := fmt.Sprintf("%d.jpg", accountID)
+
 	// Destination
-	imgPath := "./img/" + fmt.Sprintf("%d", accountID) + ".jpg"
+	imgPath := "./img/" + filename
 	dst, err := os.Create(imgPath)
 	if err != nil {
 		return err
@@ -135,9 +137,7 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 		return err
 	}
 
-	// Save the file path in db
-	queryString := "UPDATE account SET profile_img_path=$1 WHERE id=$2"
-	_, err = a.DB.Exec(queryString, imgPath, accountID)
+	err = thirdparty.UploadItem(filename)
 	if err != nil {
 		return err
 	}
