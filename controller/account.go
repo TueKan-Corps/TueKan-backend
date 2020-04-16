@@ -2,6 +2,7 @@ package controller
 
 import (
 	"TueKan-backend/model"
+	"TueKan-backend/thirdparty"
 	"database/sql"
 	"fmt"
 	"io"
@@ -122,8 +123,10 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 	}
 	defer src.Close()
 
+	filename := fmt.Sprintf("%d.jpg", accountID)
+
 	// Destination
-	imgPath := "./img/" + fmt.Sprintf("%d", accountID) + ".jpg"
+	imgPath := "./img/" + filename
 	dst, err := os.Create(imgPath)
 	if err != nil {
 		return err
@@ -135,34 +138,50 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 		return err
 	}
 
-	// Save the file path in db
-	queryString := "UPDATE account SET profile_img_path=$1 WHERE id=$2"
-	_, err = a.DB.Exec(queryString, imgPath, accountID)
+	err = thirdparty.UploadItem(filename)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusNotAcceptable, "couldn't upload")
 	}
 
 	return c.JSON(http.StatusOK, "Profile image uploaded")
 }
 
+func (a *AccountController) GetProfileIMGList(c echo.Context) error {
+	fileItems, err := thirdparty.ListItems()
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, fileItems)
+}
+
 // GetProfileIMG get account profile image
 func (a *AccountController) GetProfileIMG(c echo.Context) error {
+	accountID := c.Param("id")
 
-	accountID, err := strconv.Atoi(c.Param("id"))
+	filename := accountID + ".jpg"
+
+	err := thirdparty.DownloadItem(filename)
 	if err != nil {
-		return err
+		c.JSON(http.StatusNotFound, "cannot find img")
 	}
 
-	queryString := "SELECT profile_img_path FROM account WHERE id=$1"
-	row := a.DB.QueryRow(queryString, accountID)
-
-	var filepath string
-	err = row.Scan(&filepath)
-	if err != nil {
-		return err
-	}
+	filepath := "./img/" + filename
 
 	return c.File(filepath)
+}
+
+func (a *AccountController) ClearIMGCache(c echo.Context) error {
+	err := os.RemoveAll("img")
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll("img", 0777)
+	if err != nil {
+		return err
+	}
+
+	return c.String(http.StatusOK, "cleared")
 }
 
 func getContactFromContext(c echo.Context) [5]model.Contact {

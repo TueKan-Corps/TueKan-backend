@@ -4,6 +4,7 @@ import (
 	"TueKan-backend/config"
 	"TueKan-backend/db"
 	"TueKan-backend/routes"
+	"TueKan-backend/thirdparty"
 	"fmt"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -15,15 +16,19 @@ func main() {
 	var err error
 
 	// Load secret from .env file
-	err = c.Init()
-	if err != nil {
+	if err := c.Init(); err != nil {
 		log.Fatal("Load .env failed", err)
 	}
 
 	// Connect to DB
-	err = db.Init(&c)
-	if err != nil {
+	if err := db.Init(&c); err != nil {
 		log.Fatal("Create a connection to db failed", err)
+	}
+
+	// Connect to AWS
+	err := thirdparty.InitAWSSession(&c)
+	if err != nil {
+		log.Fatal("connect to AWS failed", err)
 	}
 
 	app := echo.New()
