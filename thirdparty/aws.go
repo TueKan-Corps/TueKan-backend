@@ -6,6 +6,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"os"
 	"time"
 )
 
@@ -57,4 +59,28 @@ func ListItems() ([]*FileItem, error) {
 	}
 
 	return fileItems, nil
+}
+
+func DownloadItem(filename string) error {
+	filepath := "./img/" + filename
+
+	file, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	downloader := s3manager.NewDownloader(Sess)
+
+	_, err = downloader.Download(file,
+		&s3.GetObjectInput{
+			Bucket: aws.String("tuekan"),
+			Key:    aws.String(filename),
+		})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
