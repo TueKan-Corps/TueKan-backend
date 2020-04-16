@@ -13,7 +13,6 @@ import (
 
 func main() {
 	var c config.Config
-	var err error
 
 	// Load secret from .env file
 	if err := c.Init(); err != nil {
@@ -26,8 +25,7 @@ func main() {
 	}
 
 	// Connect to AWS
-	err := thirdparty.InitAWSSession(&c)
-	if err != nil {
+	if err := thirdparty.InitAWSSession(&c); err != nil {
 		log.Fatal("connect to AWS failed", err)
 	}
 
