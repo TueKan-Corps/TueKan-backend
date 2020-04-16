@@ -2,6 +2,7 @@ package controller
 
 import (
 	"TueKan-backend/model"
+	"TueKan-backend/thirdparty"
 	"database/sql"
 	"fmt"
 	"io"
@@ -142,6 +143,15 @@ func (a *AccountController) UploadProfileIMG(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, "Profile image uploaded")
+}
+
+func (a *AccountController) GetProfileIMGList(c echo.Context) error {
+	fileItems, err := thirdparty.ListItems()
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, fileItems)
 }
 
 // GetProfileIMG get account profile image

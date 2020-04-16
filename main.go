@@ -30,8 +30,6 @@ func main() {
 		log.Fatal("connect to AWS failed", err)
 	}
 
-	thirdparty.ListBuckets()
-
 	app := echo.New()
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())

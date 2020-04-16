@@ -2,13 +2,19 @@ package thirdparty
 
 import (
 	"TueKan-backend/config"
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"log"
+	"time"
 )
+
+type FileItem struct {
+	Name         *string    `json:"name"`
+	LastModified *time.Time `json:"last_modified"`
+	Size         *int64     `json:"size"`
+	StorageClass *string    `json:"storage_class"`
+}
 
 var Sess *session.Session
 
@@ -30,18 +36,25 @@ func InitAWSSession(c *config.Config) error {
 	return nil
 }
 
-func ListBuckets() {
+func ListItems() ([]*FileItem, error) {
 	svc := s3.New(Sess)
-
-	result, err := svc.ListBuckets(nil)
+	resp, err := svc.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String("tuekan")})
 	if err != nil {
-		log.Fatal("Unable to list buckets, %v", err)
+		return nil, err
 	}
 
-	fmt.Println("Buckets:")
+	fileItems := make([]*FileItem, 0)
 
-	for _, b := range result.Buckets {
-		fmt.Printf("* %s created on %s\n",
-			aws.StringValue(b.Name), aws.TimeValue(b.CreationDate))
+	for _, item := range resp.Contents {
+		fileItem := new(FileItem)
+
+		fileItem.Name = item.Key
+		fileItem.Size = item.Size
+		fileItem.LastModified = item.LastModified
+		fileItem.StorageClass = item.StorageClass
+
+		fileItems = append(fileItems, fileItem)
 	}
+
+	return fileItems, nil
 }
