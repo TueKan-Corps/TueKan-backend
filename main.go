@@ -31,8 +31,6 @@ func main() {
 		log.Fatal("connect to AWS failed", err)
 	}
 
-	thirdparty.ListBuckets()
-
 	app := echo.New()
 	app.Use(middleware.CORS())
 	app.Use(middleware.Logger())
