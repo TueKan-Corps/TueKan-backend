@@ -8,12 +8,14 @@ import (
 
 // Config basic config of an app
 type Config struct {
-	DBHost string
-	DBUser string
-	DBPort string
-	DBPass string
-	DB     string
-	Port   string
+	DBHost       string
+	DBUser       string
+	DBPort       string
+	DBPass       string
+	DB           string
+	Port         string
+	AmazonID     string
+	AmazonSecret string
 }
 
 func (config *Config) Init() error {
@@ -27,6 +29,8 @@ func (config *Config) Init() error {
 	config.DBPort = os.Getenv("DB_PORT")
 	config.DBPass = os.Getenv("DB_PASS")
 	config.DB = os.Getenv("DB")
+	config.AmazonID = os.Getenv("AWS_ACCESS_ID")
+	config.AmazonSecret = os.Getenv("AWS_ACCESS_SECRET")
 
 	var ok bool
 	config.Port, ok = os.LookupEnv("PORT")
