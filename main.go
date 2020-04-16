@@ -4,6 +4,7 @@ import (
 	"TueKan-backend/config"
 	"TueKan-backend/db"
 	"TueKan-backend/routes"
+	"TueKan-backend/util"
 	"fmt"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -24,6 +25,12 @@ func main() {
 	err = db.Init(&c)
 	if err != nil {
 		log.Fatal("Create a connection to db failed", err)
+	}
+
+	// Connect to AWS
+	err = util.InitAWSSession(&c)
+	if err != nil {
+		log.Fatal("connect to AWS failed", err)
 	}
 
 	app := echo.New()
