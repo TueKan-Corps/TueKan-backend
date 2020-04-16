@@ -84,3 +84,26 @@ func DownloadItem(filename string) error {
 
 	return nil
 }
+
+func UploadItem(filename string) error {
+	filepath := "./img/" + filename
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	uploader := s3manager.NewUploader(Sess)
+
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String("tuekan"),
+		Key:    aws.String(filename),
+		Body:   file,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
