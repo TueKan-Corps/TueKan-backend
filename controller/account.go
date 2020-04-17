@@ -50,8 +50,8 @@ func (a *AccountController) Create(c echo.Context) error {
 	// insert general info
 	queryString := `INSERT INTO account (username,password,coin_amount,first_name,last_name,contact) 
 					VALUES ($1,$2,$3,$4,$5,
-					ARRAY[$6,$7,$8,$9,$10])`
-	_, err = a.DB.Exec(queryString,
+					ARRAY[$6,$7,$8,$9,$10]) RETURNING id`
+	err = a.DB.QueryRow(queryString,
 		account.Username,
 		account.Password,
 		account.CoinAmount,
@@ -61,12 +61,12 @@ func (a *AccountController) Create(c echo.Context) error {
 		account.Contact[1].Link,
 		account.Contact[2].Link,
 		account.Contact[3].Link,
-		account.Contact[4].Link)
+		account.Contact[4].Link).Scan(&account.ID)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, "Account created")
+	return c.JSON(http.StatusCreated, account.ID)
 }
 
 // GetAll get all account
