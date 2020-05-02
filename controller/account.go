@@ -286,11 +286,20 @@ func (a *AccountController) UpdateAccount(c echo.Context) error {
 
 func (a *AccountController) UpdateCoin(c echo.Context) error {
 
+	isOverwrite := c.FormValue("is_overwrite")
+
 	coin := new(model.UpdateCoins)
 	if err := c.Bind(coin); err != nil {
 		return err
 	}
-	queryString := "UPDATE account SET  coin_amount = $1 WHERE id = $2"
+
+	var queryString string
+	if isOverwrite == "true" {
+		queryString = "UPDATE account SET  coin_amount = $1 WHERE id = $2"
+	} else {
+		queryString = "UPDATE account SET coin_amount = coin_amount+$1 WHERE id = $2"
+	}
+
 	_, err := a.DB.Exec(queryString, coin.Coin, coin.ID)
 	if err != nil {
 		return err
