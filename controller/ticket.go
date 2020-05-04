@@ -24,7 +24,7 @@ func (t *TicketController) GetTicket(c echo.Context) error {
 		return err
 	}
 
-	queryString := "SELECT p.id, p.account_id, s.subject_name as tag, p.tag_id, p.topic, p.location, a.username     as tutor, tic.count      as amount, p.max_participant as max , p.start_at , p.end_at, p.price, t.access_code, p.description from post p INNER JOIN (SELECT post_id, count(post_id) as count from ticket group by post_id) tic on p.id = tic.post_id INNER JOIN subject s on p.tag_id = s.tag_id INNER JOIN account a on p.account_id = a.id INNER JOIN ticket t on p.id = t.post_id where t.account_id = $1 order by start_at desc"
+	queryString := "SELECT p.id, p.account_id, s.subject_name as tag, p.tag_id, p.topic, p.location, a.username     as tutor, tic.count      as amount, p.max_participant as max , p.start_at , p.end_at, p.price, t.access_code, p.description from post p INNER JOIN (SELECT post_id, count(post_id) as count from ticket group by post_id) tic on p.id = tic.post_id INNER JOIN subject s on p.tag_id = s.tag_id INNER JOIN account a on p.account_id = a.id INNER JOIN ticket t on p.id = t.post_id where t.account_id = $1 order by start_at asc"
 	rows, err := t.DB.Query(queryString, accountID)
 	if err != nil {
 		return err
